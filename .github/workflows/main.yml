@@ -20,6 +20,7 @@ jobs:
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSIOn}-${{ hashFiles('package-lock.json') }}
       - shell: bash
         run: |
+          ls -la
           if [[ -d node_modules ]]; then
             npm ci
           fi

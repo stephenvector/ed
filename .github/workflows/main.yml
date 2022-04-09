@@ -9,5 +9,5 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
-      - npm ci
-      - npm run build
+      - run: npm ci
+      - run: npm run build

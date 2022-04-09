@@ -4,7 +4,7 @@ on:
       - main
 
 jobs:
-  build:
+  setup_dependencies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +17,25 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSIOn}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
+      - shell: bash
+        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [setup_dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+      - run: echo '::set-output name=NODE_VERSION::$(node -v)'
+        id: get-node-version
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
         run: if [[ ! -d node_modules ]]; then npm ci ; fi
       - uses: actions/cache@v2
@@ -26,6 +44,60 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - run: npm run build
-      - run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: [setup_dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+      - run: echo '::set-output name=NODE_VERSION::$(node -v)'
+        id: get-node-version
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
+      - shell: bash
+        run: if [[ ! -d node_modules ]]; then npm ci ; fi
       - run: npm run test:ci
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: [setup_dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+      - run: echo '::set-output name=NODE_VERSION::$(node -v)'
+        id: get-node-version
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
+      - shell: bash
+        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+      - run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    needs: [setup_dependencies]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+      - run: echo '::set-output name=NODE_VERSION::$(node -v)'
+        id: get-node-version
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
+      - shell: bash
+        run: if [[ ! -d node_modules ]]; then npm ci ; fi
       - run: npm run typecheck

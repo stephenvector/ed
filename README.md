@@ -23,3 +23,17 @@ A simple editor
 // ... | .... | iiii | ii | iii...
 // ..u | uuuu | uuuu | uu | ......
 ```
+
+If you have a string like:
+
+```
+this is a string
+```
+
+And you apply an inline styling to it from 0 to 4, say 'italic', you'd get:
+
+```
+<em>this </em>is a string
+```
+
+But we should not include the space, so the actual added range should be 0 to 3.

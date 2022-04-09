@@ -1,4 +1,3 @@
-import { ParagraphState } from "../types";
 import { paragraphStateToHtml } from ".";
 
 describe("paragraphStateToHtml()", () => {

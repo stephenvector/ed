@@ -9,5 +9,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
+      - run: echo '::set-output name=NODE_VERSION::$(node -v)'
+        id: get-node-version
+      - uses: actions/cache@v3
+        with:
+          path: "node_modules"
+          key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSIOn}-${{ hashFiles('package-lock.json') }}
       - run: npm ci
       - run: npm run build

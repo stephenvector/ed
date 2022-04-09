@@ -19,7 +19,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
-        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+        run: if [[ ! -d node_modules ]]; then npm ci --prefer-offline --no-audit ; fi
 
   build:
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
-        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+        run: if [[ ! -d node_modules ]]; then npm ci --prefer-offline --no-audit ; fi
       - uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/.next/cache
@@ -61,7 +61,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
-        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+        run: if [[ ! -d node_modules ]]; then npm ci --prefer-offline --no-audit ; fi
       - run: npm run test:ci
 
   lint:
@@ -80,7 +80,7 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
-        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+        run: if [[ ! -d node_modules ]]; then npm ci --prefer-offline --no-audit ; fi
       - run: npm run lint
 
   typecheck:
@@ -99,5 +99,5 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${steps.get-node-version.outputs.NODE_VERSION}-${{ hashFiles('package-lock.json') }}
       - shell: bash
-        run: if [[ ! -d node_modules ]]; then npm ci ; fi
+        run: if [[ ! -d node_modules ]]; then npm ci --prefer-offline --no-audit ; fi
       - run: npm run typecheck

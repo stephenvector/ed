@@ -1,5 +1,102 @@
-import { useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import Link from "next/link";
+
+type LinkElement = {
+  start: number;
+  end: number;
+  href: string;
+  openInNewWindow: boolean;
+};
+
+type InlineElement = LinkElement;
+
+type ParagraphState = {
+  content: string;
+  inlineElements: InlineElement[];
+  focused: boolean;
+};
+
+type ParagraphKeydownAction = {
+  action: "keydown";
+  key: string;
+};
+
+type ParagraphFocusAction = {
+  action: "focus";
+};
+
+type ParagraphBlurAction = {
+  action: "blur";
+};
+
+type ParagraphAction =
+  | ParagraphKeydownAction
+  | ParagraphFocusAction
+  | ParagraphBlurAction;
+
+function editorReducer(state: ParagraphState, action: ParagraphAction) {
+  if (action.action === "blur") {
+    return {
+      ...state,
+      focused: false,
+    };
+  }
+
+  if (action.action === "focus") {
+    return {
+      ...state,
+      focused: true,
+    };
+  }
+
+  return state;
+}
+
+const INITIAL_STATE: ParagraphState = {
+  content: "this is some test content",
+  inlineElements: [
+    {
+      start: 0,
+      end: 10,
+      href: "http://google.com/",
+      openInNewWindow: false,
+    },
+  ],
+  focused: false,
+};
+
+function EditableParagraph() {
+  const [state, dispatch] = useReducer(editorReducer, INITIAL_STATE);
+
+  const handleSelectionChange = useCallback(() => {
+    console.log(document.getSelection());
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("selectionchange", handleSelectionChange);
+  }, [handleSelectionChange]);
+
+  return (
+    <p
+      contentEditable
+      onBlur={() => {
+        dispatch({ action: "blur" });
+      }}
+      onFocus={() => {
+        dispatch({ action: "focus" });
+      }}
+      onChange={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log((e.target as HTMLParagraphElement).innerHTML);
+      }}
+      suppressContentEditableWarning={true}
+    >
+      {state.content}
+    </p>
+  );
+}
 
 // Listen to events:
 // keydown
@@ -13,25 +110,12 @@ enum BlockType {
   Text = "#text",
   Paragraph = "p",
   PreCode = "precode",
-  Link = "link",
 }
-
-type TextBlock = {
-  type: BlockType.Text;
-  content: string;
-  uuid: string;
-};
-
-type LinkBlock = {
-  type: BlockType.Link;
-  content: string;
-  href: string;
-};
 
 type ParagraphBlock = {
   uuid: string;
   type: BlockType.Paragraph;
-  content: (TextBlock | LinkBlock)[];
+  content: string;
 };
 
 type PreCodeBlock = {
@@ -58,6 +142,12 @@ export default function Editor() {
 
   return (
     <div>
+      <Link href="/selection-coordinates">
+        <a>Selection Coordinates</a>
+      </Link>
+      <hr />
+      <EditableParagraph />
+      <hr />
       {parentBlocks.map((b) => {
         if (b.type === BlockType.PreCode) {
           return (

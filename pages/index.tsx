@@ -102,7 +102,7 @@ export default function Editor() {
 
                       return {
                         ...p,
-                        content: e.target.value,
+                        content: (e.target as HTMLTextAreaElement).value,
                       };
                     })
                   );

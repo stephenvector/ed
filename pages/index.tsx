@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+// Listen to events:
+// keydown
+// contenteditable input
+// send events to reducer
+// update content in reducer
+
 // https://github.com/satya164/react-simple-code-editor/blob/master/src/index.js
 
 enum BlockType {
